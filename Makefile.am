@@ -38,7 +38,7 @@ stoken_LDADD		= $(LDADD) $(CRYPTO_LIBS) libstoken.la
 if ENABLE_GUI
 bin_PROGRAMS		+= stoken-gui
 stoken_gui_SOURCES	= src/gui.c src/common.c
-stoken_gui_CFLAGS	= $(AM_CFLAGS) $(GTK_CFLAGS)
+stoken_gui_CFLAGS	= $(AM_CFLAGS) $(GTK_CFLAGS) -rdynamic
 stoken_gui_CPPFLAGS	= $(AM_CPPFLAGS) -DUIDIR=\"$(uidir)\"
 stoken_gui_LDADD	= $(LDADD) $(CRYPTO_LIBS) libstoken.la $(GTK_LIBS)
 

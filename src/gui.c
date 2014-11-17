@@ -297,18 +297,49 @@ static GtkWidget *create_small_app_window(void)
 	return create_app_window_common(builder);
 }
 
+G_MODULE_EXPORT void pin_clicked( GtkButton *button,GtkEntry   *widg )
+{
+    const char* newPinToAdd = gtk_button_get_label(button);
+    const gchar *currentPin = gtk_entry_get_text( widg);
+    size_t len = strlen(currentPin);
+    char* newPinText = malloc( len + 2 );
+    strcpy (newPinText,currentPin);
+    strcat(newPinText,newPinToAdd);     
+    //gtk_entry_set_text(widg->passwordbox,newPinText);
+    gtk_entry_set_text(widg,newPinText);
+    free(newPinText);
+}
+
+G_MODULE_EXPORT void clear_clicked( GtkButton *button,
+         GtkEntry   *widg )
+{
+   gtk_entry_set_text(widg,"");
+}
+
+G_MODULE_EXPORT void delete_clicked( GtkButton *button,
+         GtkEntry   *widg )
+{
+    const gchar *currentPin = gtk_entry_get_text( widg);
+    size_t len = strlen(currentPin);
+    char* newPinText = malloc( len + 2 );
+    strcpy (newPinText,currentPin);
+    if(len > 0){
+      newPinText[strlen(newPinText)-1] = 0;   
+      gtk_entry_set_text(widg,newPinText);
+    }
+}
+
 static char *do_password_dialog(const char *ui_file)
 {
 	GtkBuilder *builder;
 	GtkWidget *widget, *dialog;
 	gint resp;
 	char *ret = NULL;
-
 	builder = __gtk_builder_new_from_file(ui_file);
+	gtk_builder_connect_signals( builder, GTK_ENTRY( gtk_builder_get_object( builder, "password" ) ) );
 	dialog = GTK_WIDGET(gtk_builder_get_object(builder, "dialog_window"));
 	gtk_widget_show_all(dialog);
 	resp = gtk_dialog_run(GTK_DIALOG(dialog));
-
 	if (resp == GTK_RESPONSE_OK) {
 		widget = GTK_WIDGET(gtk_builder_get_object(builder, "password"));
 		ret = strdup(gtk_entry_get_text(GTK_ENTRY(widget)));
@@ -394,6 +425,8 @@ static int request_credentials(struct securid_token *t)
 
 	return ERR_NONE;
 }
+
+
 
 int main(int argc, char **argv)
 {
